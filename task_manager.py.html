@@ -1,0 +1,542 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name=claude:viewport-fit-sides content=cover><style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-right:env(safe-area-inset-right,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}</style><style>.md-table{overflow-x:auto}@media print{.md-table{overflow-x:visible}}</style><style>:root{color-scheme:light dark;--md-bg:#fff;--md-text:rgba(0,0,0,.8);--md-muted:rgba(0,0,0,.6);--md-fill:rgba(0,0,0,.04);--md-fill-strong:rgba(0,0,0,.06);--md-rule:rgba(0,0,0,.1);--md-rule-strong:rgba(0,0,0,.16);--md-link:hsl(210 100% 45%)}@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){--md-bg:#0d0d0d;--md-text:rgba(255,255,255,.85);--md-muted:rgba(255,255,255,.6);--md-fill:rgba(255,255,255,.06);--md-fill-strong:rgba(255,255,255,.09);--md-rule:rgba(255,255,255,.14);--md-rule-strong:rgba(255,255,255,.22);--md-link:hsl(210 100% 72%)}}:root[data-theme="dark"]{color-scheme:dark;--md-bg:#0d0d0d;--md-text:rgba(255,255,255,.85);--md-muted:rgba(255,255,255,.6);--md-fill:rgba(255,255,255,.06);--md-fill-strong:rgba(255,255,255,.09);--md-rule:rgba(255,255,255,.14);--md-rule-strong:rgba(255,255,255,.22);--md-link:hsl(210 100% 72%)}:root[data-theme="light"]{color-scheme:light}@media print{:root,:root[data-theme="dark"]{color-scheme:light;--md-bg:#fff;--md-text:rgba(0,0,0,.8);--md-muted:rgba(0,0,0,.6);--md-fill:rgba(0,0,0,.04);--md-fill-strong:rgba(0,0,0,.06);--md-rule:rgba(0,0,0,.1);--md-rule-strong:rgba(0,0,0,.16);--md-link:hsl(210 100% 45%)}}body{background:var(--md-bg);color:var(--md-text);max-width:720px;margin:0 auto;padding:32px;display:flex;flex-direction:column;gap:10px;font:14px/1.55 -apple-system,BlinkMacSystemFont,'SF Pro','Segoe UI',sans-serif;overflow-wrap:break-word}body>:first-child{margin-top:0}h1,h2,h3,h4,h5,h6{margin:6px 0 0;line-height:1.25;font-weight:600;text-wrap:balance}h1{font-size:1.35em}h2{font-size:1.15em;color:var(--md-muted)}h3,h4,h5,h6{font-size:1em}p,ul,ol,blockquote,table,pre,hr{margin:0}strong{font-weight:600}a{color:var(--md-link);text-decoration:none}a:hover{text-decoration:underline}ul,ol{display:flex;flex-direction:column;gap:6px;padding-left:22px}ul{list-style:disc}ol{list-style:decimal}:is(li,td,th)>*+:is(p,ul,ol,blockquote){margin-top:6px}blockquote{display:flex;flex-direction:column;gap:10px;border-left:2px solid var(--md-rule);padding-left:10px;color:var(--md-muted)}:not(pre)>code{background:var(--md-fill);padding:1px 3px;border-radius:4px;font:.92em 'SF Mono',ui-monospace,Menlo,Consolas,monospace}a>code{background:none;color:inherit}pre{background:var(--md-fill);padding:10px 12px;border-radius:6px;overflow-x:auto;font:12px/1.5 'SF Mono',ui-monospace,Menlo,Consolas,monospace;margin-block:4px}pre code{background:none;padding:0;font:inherit}table{width:100%;border-collapse:separate;border-spacing:2px;font:inherit}th,td{padding:6px 8px;border-radius:3px;text-align:left;vertical-align:top}th{background:var(--md-fill-strong);font-weight:600}td{background:var(--md-fill)}:is(th,td) :not(pre)>code{background:transparent}hr{border:0;border-top:1px solid var(--md-rule-strong);margin-block:10px}img{max-width:100%;height:auto;border-radius:4px}</style>
+</head><body>
+<pre><code>&#34;&#34;&#34;
+Smart Task Manager - Data Structures layihəsi
+Array, Linked List, Stack/Queue/Deque, Hash Table, BST
+&#34;&#34;&#34;
+import random
+import time
+from collections import deque
+
+
+def ölç(func, təkrar=5):
+    &#34;&#34;&#34;Funksiyanı bir neçə dəfə işlədib orta vaxtı (ms) qaytarır.&#34;&#34;&#34;
+    cəm = 0
+    for _ in range(təkrar):
+        başla = time.perf_counter()
+        func()
+        cəm += time.perf_counter() - başla
+    return cəm / təkrar * 1000
+
+
+# =====================================================
+# 1. ARRAY VƏ DYNAMIC ARRAY
+# =====================================================
+class StaticArray:
+    &#34;&#34;&#34;Sabit ölçülü array: ölçü əvvəlcədən verilir, böyümür.&#34;&#34;&#34;
+
+    def __init__(self, capacity):
+        self.data = [None] * capacity
+        self.size = 0
+
+    def insert(self, index, value):
+        if self.size == len(self.data):
+            raise OverflowError(&#34;Array doludur!&#34;)
+        for i in range(self.size, index, -1):   # elementləri sağa sürüşdür
+            self.data[i] = self.data[i - 1]
+        self.data[index] = value
+        self.size += 1
+
+    def delete(self, index):
+        for i in range(index, self.size - 1):   # elementləri sola sürüşdür
+            self.data[i] = self.data[i + 1]
+        self.size -= 1
+
+    def search(self, value):
+        for i in range(self.size):
+            if self.data[i] == value:
+                return i
+        return -1
+
+
+def array_benchmark():
+    print(&#34;\n--- Array (sabit) vs Dynamic Array (Python list), vaxt ms ilə ---&#34;)
+    print(f&#34;{&#39;Həcm&#39;:&gt;7} | {&#39;Əməliyyat&#39;:&lt;22} | {&#39;Static&#39;:&gt;9} | {&#39;Dynamic&#39;:&gt;9}&#34;)
+    for n in (1_000, 10_000, 50_000):
+        sa = StaticArray(n + 1)
+        dyn = []
+        for i in range(n):
+            sa.insert(sa.size, i)
+            dyn.append(i)
+
+        # Sonuna əlavə: ikisi də O(1)
+        t1 = ölç(lambda: (sa.insert(sa.size, 1), sa.delete(sa.size - 1)))
+        t2 = ölç(lambda: (dyn.append(1), dyn.pop()))
+        print(f&#34;{n:&gt;7} | {&#39;Sona əlavə+silmə&#39;:&lt;22} | {t1:&gt;9.4f} | {t2:&gt;9.4f}&#34;)
+
+        # Əvvələ əlavə: ikisi də O(n)
+        t1 = ölç(lambda: (sa.insert(0, 1), sa.delete(0)))
+        t2 = ölç(lambda: (dyn.insert(0, 1), dyn.pop(0)))
+        print(f&#34;{n:&gt;7} | {&#39;Əvvələ əlavə+silmə&#39;:&lt;22} | {t1:&gt;9.4f} | {t2:&gt;9.4f}&#34;)
+
+        # Axtarış (ən pis hal: sonuncu element): O(n)
+        t1 = ölç(lambda: sa.search(n - 1))
+        t2 = ölç(lambda: dyn.index(n - 1))
+        print(f&#34;{n:&gt;7} | {&#39;Axtarış (sonuncu)&#39;:&lt;22} | {t1:&gt;9.4f} | {t2:&gt;9.4f}&#34;)
+        print(&#34;-&#34; * 56)
+    print(&#34;Qeyd: Python list C dilində yazıldığı üçün mütləq vaxt kiçikdir,&#34;)
+    print(&#34;amma əsas məqam artımdır: sona əlavə sabit, əvvələ əlavə və axtarış həcmlə artır.&#34;)
+
+
+# =====================================================
+# 2. SINGLY VƏ DOUBLY LINKED LIST
+# =====================================================
+class SNode:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+
+class SinglyLinkedList:
+    def __init__(self):
+        self.head = None          # tail yoxdur
+
+    def prepend(self, data):      # O(1)
+        node = SNode(data)
+        node.next = self.head
+        self.head = node
+
+    def append(self, data):       # O(n): sona qədər getmək lazımdır
+        node = SNode(data)
+        if not self.head:
+            self.head = node
+            return
+        cur = self.head
+        while cur.next:
+            cur = cur.next
+        cur.next = node
+
+    def search(self, data):       # O(n)
+        cur = self.head
+        while cur:
+            if cur.data == data:
+                return True
+            cur = cur.next
+        return False
+
+    def delete(self, data):       # O(n)
+        cur, prev = self.head, None
+        while cur:
+            if cur.data == data:
+                if prev:
+                    prev.next = cur.next
+                else:
+                    self.head = cur.next
+                return True
+            prev, cur = cur, cur.next
+        return False
+
+
+class DNode:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+        self.prev = None
+
+
+class DoublyLinkedList:
+    def __init__(self):
+        self.head = None
+        self.tail = None          # tail var
+
+    def prepend(self, data):      # O(1)
+        node = DNode(data)
+        if not self.head:
+            self.head = self.tail = node
+        else:
+            node.next = self.head
+            self.head.prev = node
+            self.head = node
+
+    def append(self, data):       # O(1): tail sayəsində
+        node = DNode(data)
+        if not self.tail:
+            self.head = self.tail = node
+        else:
+            node.prev = self.tail
+            self.tail.next = node
+            self.tail = node
+
+    def search(self, data):       # O(n)
+        cur = self.head
+        while cur:
+            if cur.data == data:
+                return True
+            cur = cur.next
+        return False
+
+    def delete_last(self):        # O(1): tail.prev var
+        if not self.tail:
+            return
+        if self.tail.prev:
+            self.tail = self.tail.prev
+            self.tail.next = None
+        else:
+            self.head = self.tail = None
+
+    def delete(self, data):       # O(n) axtarış, sonra O(1) silmə
+        cur = self.head
+        while cur:
+            if cur.data == data:
+                if cur.prev:
+                    cur.prev.next = cur.next
+                else:
+                    self.head = cur.next
+                if cur.next:
+                    cur.next.prev = cur.prev
+                else:
+                    self.tail = cur.prev
+                return True
+            cur = cur.next
+        return False
+
+
+def linked_list_benchmark():
+    n = 3000
+    print(f&#34;\n--- Singly vs Doubly Linked List ({n} element), vaxt ms ilə ---&#34;)
+    print(f&#34;{&#39;Əməliyyat&#39;:&lt;28} | {&#39;Singly&#39;:&gt;9} | {&#39;Doubly&#39;:&gt;9}&#34;)
+
+    def doldur(cls):
+        lst = cls()
+        for i in range(n):
+            lst.prepend(i)
+        return lst
+
+    s, d = doldur(SinglyLinkedList), doldur(DoublyLinkedList)
+
+    t1 = ölç(lambda: (s.prepend(-1), s.delete(-1)))
+    t2 = ölç(lambda: (d.prepend(-1), d.delete(-1)))
+    print(f&#34;{&#39;Əvvələ əlavə (prepend)&#39;:&lt;28} | {t1:&gt;9.4f} | {t2:&gt;9.4f}&#34;)
+
+    t1 = ölç(lambda: (s.append(-1), s.delete(-1)))
+    t2 = ölç(lambda: (d.append(-1), d.delete_last()))
+    print(f&#34;{&#39;Sona əlavə (append)+silmə&#39;:&lt;28} | {t1:&gt;9.4f} | {t2:&gt;9.4f}&#34;)
+
+    t1 = ölç(lambda: s.search(n))      # n yoxdur -&gt; bütün siyahı gəzilir
+    t2 = ölç(lambda: d.search(n))
+    print(f&#34;{&#39;Axtarış (ən pis hal)&#39;:&lt;28} | {t1:&gt;9.4f} | {t2:&gt;9.4f}&#34;)
+    print(&#34;Nəticə: Doubly list-də tail olduğu üçün sona əlavə O(1)-dir,&#34;)
+    print(&#34;Singly-də isə sona qədər getmək lazımdır, O(n). Əvəzində Singly daha az yaddaş işlədir.&#34;)
+
+
+# =====================================================
+# 3. HASH TABLE (CHAINING)
+# =====================================================
+class HashTable:
+    def __init__(self, capacity=7):
+        self.capacity = capacity
+        self.buckets = [[] for _ in range(capacity)]
+
+    def _index(self, key):
+        return hash(key) % self.capacity
+
+    def insert(self, key, value):
+        bucket = self.buckets[self._index(key)]
+        for pair in bucket:
+            if pair[0] == key:          # eyni açar varsa yenilə
+                pair[1] = value
+                return
+        bucket.append([key, value])     # collision olsa, zəncirə əlavə olunur
+
+    def search(self, key):
+        for k, v in self.buckets[self._index(key)]:
+            if k == key:
+                return v
+        return None
+
+    def delete(self, key):
+        bucket = self.buckets[self._index(key)]
+        for i, pair in enumerate(bucket):
+            if pair[0] == key:
+                del bucket[i]
+                return True
+        return False
+
+    def items(self):
+        return [(k, v) for bucket in self.buckets for k, v in bucket]
+
+    def show(self):
+        for i, bucket in enumerate(self.buckets):
+            zəncir = &#34; -&gt; &#34;.join(f&#34;[{k}: {v}]&#34; for k, v in bucket) or &#34;boş&#34;
+            print(f&#34;  Bucket {i}: {zəncir}&#34;)
+
+
+def hash_demo():
+    print(&#34;\n--- Hash Table (chaining) nümayişi ---&#34;)
+    ht = HashTable(capacity=5)
+    for i in range(1, 9):               # 8 element, 5 bucket -&gt; collision qaçılmazdır
+        ht.insert(i, f&#34;Tapşırıq {i}&#34;)
+    ht.show()
+    print(&#34;Axtarış (3):&#34;, ht.search(3))
+    ht.delete(3)
+    print(&#34;Silindikdən sonra axtarış (3):&#34;, ht.search(3))
+
+
+# =====================================================
+# 4. BINARY SEARCH TREE (iterativ, rekursiya limiti problemi yoxdur)
+# =====================================================
+class BSTNode:
+    def __init__(self, key, value=None):
+        self.key = key
+        self.value = value
+        self.left = None
+        self.right = None
+
+
+class BST:
+    def __init__(self):
+        self.root = None
+
+    def insert(self, key, value=None):
+        node = BSTNode(key, value)
+        if not self.root:
+            self.root = node
+            return
+        cur = self.root
+        while True:
+            if key == cur.key:
+                cur.value = value
+                return
+            if key &lt; cur.key:
+                if not cur.left:
+                    cur.left = node
+                    return
+                cur = cur.left
+            else:
+                if not cur.right:
+                    cur.right = node
+                    return
+                cur = cur.right
+
+    def search(self, key):
+        cur = self.root
+        while cur and cur.key != key:
+            cur = cur.left if key &lt; cur.key else cur.right
+        return cur
+
+    def delete(self, key):
+        parent, cur = None, self.root
+        while cur and cur.key != key:
+            parent = cur
+            cur = cur.left if key &lt; cur.key else cur.right
+        if not cur:
+            return False
+        if cur.left and cur.right:      # 3-cü hal: iki uşaq -&gt; inorder successor
+            sp, s = cur, cur.right
+            while s.left:
+                sp, s = s, s.left
+            cur.key, cur.value = s.key, s.value
+            parent, cur = sp, s         # indi successor silinəcək (ən çox 1 uşağı var)
+        child = cur.left or cur.right   # 1-ci və 2-ci hal: yarpaq və ya bir uşaq
+        if parent is None:
+            self.root = child
+        elif parent.left is cur:
+            parent.left = child
+        else:
+            parent.right = child
+        return True
+
+    def inorder(self):
+        &#34;&#34;&#34;Açarları artan sırada qaytarır.&#34;&#34;&#34;
+        nəticə, stack, cur = [], [], self.root
+        while stack or cur:
+            while cur:
+                stack.append(cur)
+                cur = cur.left
+            cur = stack.pop()
+            nəticə.append((cur.key, cur.value))
+            cur = cur.right
+        return nəticə
+
+    def height(self):
+        if not self.root:
+            return 0
+        yüksəklik, stack = 0, [(self.root, 1)]
+        while stack:
+            node, d = stack.pop()
+            yüksəklik = max(yüksəklik, d)
+            if node.left:
+                stack.append((node.left, d + 1))
+            if node.right:
+                stack.append((node.right, d + 1))
+        return yüksəklik
+
+
+def bst_demo():
+    n = 1000
+    print(f&#34;\n--- BST: sıralı vs təsadüfi verilənlər ({n} element) ---&#34;)
+    sıralı = list(range(n))
+    təsadüfi = sıralı[:]
+    random.shuffle(təsadüfi)
+
+    nəticələr = {}
+    for ad, data in ((&#34;Sıralı&#34;, sıralı), (&#34;Təsadüfi&#34;, təsadüfi)):
+        t = BST()
+        for x in data:
+            t.insert(x)
+        vaxt = ölç(lambda: [t.search(x) for x in range(n)], təkrar=3)
+        nəticələr[ad] = (t.height(), vaxt)
+
+    print(f&#34;{&#39;Verilən&#39;:&lt;10} | {&#39;Hündürlük&#39;:&gt;10} | {n} axtarışın vaxtı (ms)&#34;)
+    for ad, (h, v) in nəticələr.items():
+        print(f&#34;{ad:&lt;10} | {h:&gt;10} | {v:&gt;10.3f}&#34;)
+    print(&#34;Nəticə: sıralı əlavədə hər element əvvəlkinin sağına düşür,&#34;)
+    print(&#34;ağac linked list-ə çevrilir (hündürlük n, axtarış O(n)).&#34;)
+    print(&#34;Təsadüfi verilənlərdə ağac balanslı qalır (hündürlük təxminən log n, axtarış O(log n)).&#34;)
+
+    print(&#34;\nSilmə nümunəsi (50, 30, 70, 20, 40, 60, 80):&#34;)
+    t = BST()
+    for x in (50, 30, 70, 20, 40, 60, 80):
+        t.insert(x)
+    for x, hal in ((20, &#34;yarpaq&#34;), (30, &#34;bir uşaq&#34;), (50, &#34;iki uşaq&#34;)):
+        t.delete(x)
+        print(f&#34;  {x} silindi ({hal}) -&gt; {[k for k, _ in t.inorder()]}&#34;)
+
+
+# =====================================================
+# 5. TASK MANAGER (Stack, Queue, Deque, Hash Table, BST real istifadədə)
+# =====================================================
+class TaskManager:
+    def __init__(self):
+        self.tasks = HashTable(capacity=11)  # id -&gt; başlıq (sürətli axtarış)
+        self.sorted_ids = BST()              # id-lər sıralı saxlanılır
+        self.queue = deque()                 # Queue (FIFO): icra növbəsi
+        self.undo_stack = []                 # Stack (LIFO): Undo
+        self.history = deque(maxlen=5)       # Deque: son 5 əməliyyat
+        self.next_id = 1
+
+    def _add(self, task_id, title):
+        self.tasks.insert(task_id, title)
+        self.sorted_ids.insert(task_id, title)
+        self.queue.append(task_id)
+
+    def _remove(self, task_id):
+        self.tasks.delete(task_id)
+        self.sorted_ids.delete(task_id)
+        if task_id in self.queue:
+            self.queue.remove(task_id)
+
+    def add(self, title):
+        task_id = self.next_id
+        self.next_id += 1
+        self._add(task_id, title)
+        self.undo_stack.append((&#34;add&#34;, task_id, title))
+        self.history.append(f&#34;Əlavə edildi: #{task_id} {title}&#34;)
+        return task_id
+
+    def delete(self, task_id):
+        title = self.tasks.search(task_id)
+        if title is None:
+            return False
+        self._remove(task_id)
+        self.undo_stack.append((&#34;delete&#34;, task_id, title))
+        self.history.append(f&#34;Silindi: #{task_id} {title}&#34;)
+        return True
+
+    def process_next(self):
+        if not self.queue:
+            return None
+        task_id = self.queue.popleft()      # ən əvvəl gələn ilk icra olunur
+        title = self.tasks.search(task_id)
+        self.tasks.delete(task_id)
+        self.sorted_ids.delete(task_id)
+        self.history.append(f&#34;İcra edildi: #{task_id} {title}&#34;)
+        return task_id, title
+
+    def undo(self):
+        if not self.undo_stack:
+            return None
+        action, task_id, title = self.undo_stack.pop()   # ən son əməliyyat
+        if action == &#34;add&#34;:
+            self._remove(task_id)
+        else:
+            self._add(task_id, title)
+        self.history.append(f&#34;Undo: {action} #{task_id}&#34;)
+        return action, task_id, title
+
+
+# =====================================================
+# MENYU
+# =====================================================
+MENYU = &#34;&#34;&#34;
+========= SMART TASK MANAGER =========
+ 1. Tapşırıq əlavə et
+ 2. Tapşırığı sil
+ 3. Tapşırığı ID ilə tap (Hash Table)
+ 4. Bütün tapşırıqlar ID sırası ilə (BST)
+ 5. Növbəti tapşırığı icra et (Queue)
+ 6. Undo (Stack)
+ 7. Son 5 əməliyyat (Deque)
+ --- Müqayisə və nümayişlər ---
+ 8. Array vs Dynamic Array benchmark
+ 9. Singly vs Doubly Linked List benchmark
+10. Hash Table (collision, chaining)
+11. BST: sıralı vs təsadüfi verilənlər
+ 0. Çıxış
+======================================&#34;&#34;&#34;
+
+
+def oxu_id(mesaj):
+    try:
+        return int(input(mesaj))
+    except ValueError:
+        print(&#34;Xəta: rəqəm daxil edin.&#34;)
+        return None
+
+
+def main():
+    tm = TaskManager()
+    while True:
+        print(MENYU)
+        seçim = input(&#34;Seçim: &#34;).strip()
+
+        if seçim == &#34;1&#34;:
+            başlıq = input(&#34;Tapşırıq başlığı: &#34;).strip()
+            if başlıq:
+                print(f&#34;Əlavə edildi, ID = {tm.add(başlıq)}&#34;)
+        elif seçim == &#34;2&#34;:
+            i = oxu_id(&#34;Silinəcək ID: &#34;)
+            if i is not None:
+                print(&#34;Silindi.&#34; if tm.delete(i) else &#34;Belə ID yoxdur.&#34;)
+        elif seçim == &#34;3&#34;:
+            i = oxu_id(&#34;Axtarılan ID: &#34;)
+            if i is not None:
+                nəticə = tm.tasks.search(i)
+                print(f&#34;Tapıldı: {nəticə}&#34; if nəticə else &#34;Tapılmadı.&#34;)
+        elif seçim == &#34;4&#34;:
+            siyahı = tm.sorted_ids.inorder()
+            if not siyahı:
+                print(&#34;Tapşırıq yoxdur.&#34;)
+            for k, v in siyahı:
+                print(f&#34;  #{k}: {v}&#34;)
+        elif seçim == &#34;5&#34;:
+            n = tm.process_next()
+            print(f&#34;İcra edildi: #{n[0]} {n[1]}&#34; if n else &#34;Növbə boşdur.&#34;)
+        elif seçim == &#34;6&#34;:
+            u = tm.undo()
+            print(f&#34;Geri alındı: {u[0]} #{u[1]} {u[2]}&#34; if u else &#34;Geri almaq üçün əməliyyat yoxdur.&#34;)
+        elif seçim == &#34;7&#34;:
+            if not tm.history:
+                print(&#34;Tarixçə boşdur.&#34;)
+            for h in reversed(tm.history):
+                print(&#34;  -&#34;, h)
+        elif seçim == &#34;8&#34;:
+            array_benchmark()
+        elif seçim == &#34;9&#34;:
+            linked_list_benchmark()
+        elif seçim == &#34;10&#34;:
+            hash_demo()
+        elif seçim == &#34;11&#34;:
+            bst_demo()
+        elif seçim == &#34;0&#34;:
+            print(&#34;Sağ olun!&#34;)
+            break
+        else:
+            print(&#34;Yanlış seçim.&#34;)
+
+
+if __name__ == &#34;__main__&#34;:
+    main()
+</code></pre>
+
+</body></html>
